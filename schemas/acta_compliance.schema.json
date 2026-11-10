@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ActaCompliance",
+  "type": "object",
+  "properties": {
+    "orden_id": { "type": "string" },
+    "decision": { "type": "string", "enum": ["APROBADA", "RECHAZADA"] },
+    "oficial": { "type": "string" },
+    "firma": { "type": "string" },
+    "timestamp_decision": { "type": "string", "format": "date-time" },
+    "hash_clasificacion": { "type": "string" },
+    "justificacion": { "type": "string" }
+  },
+  "required": ["orden_id", "decision", "oficial", "firma", "timestamp_decision", "hash_clasificacion"],
+  "allOf": [
+    {
+      "if": {
+        "properties": { "decision": { "const": "RECHAZADA" } }
+      },
+      "then": {
+        "required": ["justificacion"],
+        "properties": { "justificacion": { "minLength": 20 } }
+      }
+    }
+  ]
+}

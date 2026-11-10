@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AnalisisContexto",
+  "type": "object",
+  "properties": {
+    "orden_id": { "type": "string" },
+    "cliente_en_watchlist": { "type": "boolean" },
+    "patron_inusual": { "type": "boolean" },
+    "conflicto_politica": { "type": "boolean" },
+    "justificacion": { "type": "string", "minLength": 20 },
+    "confianza": { "type": "number", "minimum": 0, "maximum": 1 }
+  },
+  "required": [
+    "orden_id", 
+    "cliente_en_watchlist", 
+    "patron_inusual", 
+    "conflicto_politica", 
+    "justificacion", 
+    "confianza"
+  ],
+  "additionalProperties": false
+}

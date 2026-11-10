@@ -1,0 +1,72 @@
+[
+  {
+    "id": "case_001",
+    "descripcion": "Orden normal, cliente limpio, posición baja.",
+    "orden": {"orden_id": "ORD-001", "cliente_id": "CLI-LIMPIO", "instrumento": "AAPL", "tipo": "buy", "cantidad": 10, "cuenta_id": "ACC-1"},
+    "contexto": {"posicion_actual": 0, "en_watchlist": false, "patron_inusual": false, "exposicion_sector": 5.0, "valor_orden": 1000, "valor_portafolio": 100000},
+    "esperado": {"riesgo": "LOW", "piso_aplicado": false, "pasa_reglas": true}
+  },
+  {
+    "id": "case_002",
+    "descripcion": "Falla R1_posicion, debe forzar HIGH.",
+    "orden": {"orden_id": "ORD-002", "cliente_id": "CLI-NORMAL", "instrumento": "TSLA", "tipo": "buy", "cantidad": 500, "cuenta_id": "ACC-2"},
+    "contexto": {"posicion_actual": 800, "en_watchlist": false, "patron_inusual": false, "exposicion_sector": 10.0, "valor_orden": 50000, "valor_portafolio": 1000000},
+    "esperado": {"riesgo": "HIGH", "piso_aplicado": true, "pasa_reglas": false}
+  },
+  {
+    "id": "case_003",
+    "descripcion": "Cliente en watchlist, debe ser MEDIUM.",
+    "orden": {"orden_id": "ORD-003", "cliente_id": "CLI-WATCH", "instrumento": "AAPL", "tipo": "buy", "cantidad": 10, "cuenta_id": "ACC-3"},
+    "contexto": {"posicion_actual": 0, "en_watchlist": true, "patron_inusual": false, "exposicion_sector": 5.0, "valor_orden": 1000, "valor_portafolio": 100000},
+    "esperado": {"riesgo": "MEDIUM", "piso_aplicado": false, "pasa_reglas": true}
+  },
+  {
+    "id": "case_004",
+    "descripcion": "Falla R4_wash_trading (compra y venta mismo día).",
+    "orden": {"orden_id": "ORD-004", "cliente_id": "CLI-NORMAL", "instrumento": "MSFT", "tipo": "buy", "cantidad": 10, "cuenta_id": "ACC-4"},
+    "contexto": {"posicion_actual": 0, "en_watchlist": false, "patron_inusual": false, "historial_ordenes_24h": [{"instrumento": "MSFT", "tipo": "sell"}], "exposicion_sector": 5.0, "valor_orden": 1000, "valor_portafolio": 100000},
+    "esperado": {"riesgo": "HIGH", "piso_aplicado": true, "pasa_reglas": false}
+  },
+  {
+    "id": "case_005",
+    "descripcion": "Instrumento en lista restringida (BABA).",
+    "orden": {"orden_id": "ORD-005", "cliente_id": "CLI-LIMPIO", "instrumento": "BABA", "tipo": "buy", "cantidad": 10, "cuenta_id": "ACC-5"},
+    "contexto": {"posicion_actual": 0, "en_watchlist": false, "patron_inusual": false, "exposicion_sector": 5.0, "valor_orden": 1000, "valor_portafolio": 100000},
+    "esperado": {"riesgo": "HIGH", "piso_aplicado": true, "pasa_reglas": false}
+  },
+  {
+    "id": "case_006",
+    "descripcion": "Riesgo CRITICAL por múltiples fallos y watchlist.",
+    "orden": {"orden_id": "ORD-006", "cliente_id": "CLI-WATCH", "instrumento": "BABA", "tipo": "buy", "cantidad": 5000, "cuenta_id": "ACC-6"},
+    "contexto": {"posicion_actual": 800, "en_watchlist": true, "patron_inusual": true, "exposicion_sector": 30.0, "valor_orden": 500000, "valor_portafolio": 1000000},
+    "esperado": {"riesgo": "CRITICAL", "piso_aplicado": true, "pasa_reglas": false}
+  },
+  {
+    "id": "case_007",
+    "descripcion": "Excede concentración sectorial (R3).",
+    "orden": {"orden_id": "ORD-007", "cliente_id": "CLI-NORMAL", "instrumento": "NVDA", "tipo": "buy", "cantidad": 100, "cuenta_id": "ACC-7"},
+    "contexto": {"posicion_actual": 0, "en_watchlist": false, "patron_inusual": false, "exposicion_sector": 20.0, "valor_orden": 600000, "valor_portafolio": 1000000},
+    "esperado": {"riesgo": "HIGH", "piso_aplicado": true, "pasa_reglas": false}
+  },
+  {
+    "id": "case_008",
+    "descripcion": "Venta normal, cliente limpio.",
+    "orden": {"orden_id": "ORD-008", "cliente_id": "CLI-LIMPIO", "instrumento": "TSLA", "tipo": "sell", "cantidad": 5, "cuenta_id": "ACC-8"},
+    "contexto": {"posicion_actual": 100, "en_watchlist": false, "patron_inusual": false, "exposicion_sector": 5.0, "valor_orden": 1000, "valor_portafolio": 100000},
+    "esperado": {"riesgo": "LOW", "piso_aplicado": false, "pasa_reglas": true}
+  },
+  {
+    "id": "case_009",
+    "descripcion": "Orden en watchlist con patrón inusual, pero pasa reglas.",
+    "orden": {"orden_id": "ORD-009", "cliente_id": "CLI-WATCH", "instrumento": "AMZN", "tipo": "buy", "cantidad": 10, "cuenta_id": "ACC-9"},
+    "contexto": {"posicion_actual": 0, "en_watchlist": true, "patron_inusual": true, "exposicion_sector": 5.0, "valor_orden": 1000, "valor_portafolio": 100000},
+    "esperado": {"riesgo": "MEDIUM", "piso_aplicado": false, "pasa_reglas": true}
+  },
+  {
+    "id": "case_010",
+    "descripcion": "Falla R3 por concentración extrema, cliente limpio.",
+    "orden": {"orden_id": "ORD-010", "cliente_id": "CLI-LIMPIO", "instrumento": "TSLA", "tipo": "buy", "cantidad": 100, "cuenta_id": "ACC-10"},
+    "contexto": {"posicion_actual": 0, "en_watchlist": false, "patron_inusual": false, "exposicion_sector": 24.0, "valor_orden": 300000, "valor_portafolio": 1000000},
+    "esperado": {"riesgo": "HIGH", "piso_aplicado": true, "pasa_reglas": false}
+  }
+]

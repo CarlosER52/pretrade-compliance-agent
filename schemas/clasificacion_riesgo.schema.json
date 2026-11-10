@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ClasificacionRiesgo",
+  "type": "object",
+  "properties": {
+    "orden_id": { "type": "string" },
+    "riesgo": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"] },
+    "justificacion": { "type": "string", "minLength": 20 },
+    "piso_aplicado": { "type": "boolean" },
+    "hash_inputs": { "type": "string" }
+  },
+  "required": ["orden_id", "riesgo", "justificacion", "piso_aplicado", "hash_inputs"],
+  "additionalProperties": false
+}

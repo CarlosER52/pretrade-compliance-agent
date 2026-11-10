@@ -1,0 +1,32 @@
+# .gitignore
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+
+# Variables de entorno (¡CRÍTICO! No subir API Keys)
+.env
+.env.local
+
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Sistema Operativo
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/

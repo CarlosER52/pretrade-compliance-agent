@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ValidacionReglas",
+  "type": "object",
+  "properties": {
+    "orden_id": { "type": "string" },
+    "reglas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "regla_id": { "type": "string", "enum": ["R1_posicion", "R2_lista_restringida", "R3_concentracion", "R4_wash_trading"] },
+          "resultado": { "type": "string", "enum": ["pass", "fail"] },
+          "detalle": { "type": "string" }
+        },
+        "required": ["regla_id", "resultado", "detalle"]
+      },
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "fallos_total": { "type": "integer", "minimum": 0, "maximum": 4 }
+  },
+  "required": ["orden_id", "reglas", "fallos_total"]
+}

@@ -1,0 +1,14 @@
+# requirements.txt
+
+# Core UI (Para la demo)
+streamlit>=1.32.0
+
+# LLM Client (Para el agente)
+openai>=1.13.3
+
+# Validación de Datos y Contratos
+jsonschema>=4.26.0
+pydantic>=2.12.5
+
+# Testing
+pytest>=9.0.2

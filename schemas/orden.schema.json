@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OrdenEntrante",
+  "type": "object",
+  "properties": {
+    "orden_id": { "type": "string", "pattern": "^ORD-[0-9]{4}-[0-9]{5}$" },
+    "cliente_id": { "type": "string" },
+    "instrumento": { "type": "string" },
+    "tipo": { "type": "string", "enum": ["buy", "sell"] },
+    "cantidad": { "type": "number", "exclusiveMinimum": 0 },
+    "precio_estimado": { "type": "number", "minimum": 0 },
+    "cuenta_id": { "type": "string" },
+    "timestamp_ingesta": { "type": "string", "format": "date-time" }
+  },
+  "required": ["orden_id", "cliente_id", "instrumento", "tipo", "cantidad", "cuenta_id"]
+}
