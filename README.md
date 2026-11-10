@@ -16,8 +16,10 @@ In institutional trading desks and brokerages, a Compliance Officer manually rev
 ## 💡 The Solution
 A deterministic workflow that pre-filters orders using **hard rules (scripts)**. Orders that pass this filter go through an **AI agent** that analyzes unstructured context and classifies risk. Finally, a **human (mandatory gate)** approves or rejects. The system guarantees that no order is executed without full traceability and that the AI can never override a hard rule.
 
-## 🏗️ Architecture & Flow
-The system is based on a state machine (Statechart) ensuring every transition leaves an auditable artifact (JSON).
+## 🏗️ Software Architecture
+The system is designed under a **Deterministic Workflow Orchestration** pattern. This architecture implements a state engine with **conditional guards**, **artifact persistence in JSON format**, and **auditable transitions**. 
+
+The architecture strictly separates the **control engine** (which dictates the flow) from the **business logic** (rules and agents), ensuring the AI never assumes autonomy over the execution flow.
 
 ![Statechart](docs/statechart.png)
 
@@ -25,11 +27,33 @@ The system is based on a state machine (Statechart) ensuring every transition le
 1. `ORDEN_RECIBIDA` (Order Received): JSON ingestion.
 2. `ESTRUCTURA_VALIDADA` (Structure Validated): Schema validation.
 3. `REGLAS_EVALUADAS` (Rules Evaluated): Hard rules execution (deterministic).
-4. `CONTEXTO_ANALIZADO` (Context Analyzed): AI agent analyzes patterns missed by rules.
+4. `CONTEXTO_ANALIZADO` (Context Analyzed): The agent analyzes patterns missed by rules.
 5. `RIESGO_CLASIFICADO` (Risk Classified): Level assignment (LOW, MEDIUM, HIGH, CRITICAL).
 6. `REVISION_HUMANA` (Human Review): Mandatory gate for risk >= MEDIUM.
 7. `APROBADA / RECHAZADA` (Approved / Rejected): Final decision by the officer.
 8. `ARCHIVADA` (Archived): Idempotent auditing.
+
+**Architecture Components:**
+*   **Workflow Engine (Orchestrator):** The engine that dictates transitions. It is purely deterministic and does not use AI.
+*   **Rules Engine (Scripts):** Hard, immutable validations (R1 to R4).
+*   **Context Agent (AI):** Bounded function that analyzes unstructured data.
+*   **Guards (Guardrails):** Safety controls that validate transitions (e.g., Hard rule floor).
+*   **Human Gate:** Final decision interface with digital signature.
+
+### The Agent (LLM via API)
+The context analysis agent **is not an autonomous agent**. It is a **deterministic function with an LLM behind it**. 
+*   **Model:** It makes a single HTTP call to the OpenAI API (default `gpt-4o-mini`).
+*   **Contract:** The prompt forces the model to return strict JSON (`response_format={"type": "json_object"}`), validated against our schema.
+*   **Decoupling:** The LLM client is isolated. If we migrate to Anthropic, a local model (Llama 3), or Azure OpenAI tomorrow, the Statechart and Guards do not need to change a single line of code.
+
+### Tech Stack
+| Layer | Technology | Why |
+| :--- | :--- | :--- |
+| **Orchestrator** | Python 3.12 | Standard language for agentic and financial systems. |
+| **Frontend (Gate)** | Streamlit | Rapid prototyping of the Compliance Officer's interface. |
+| **Data Validation** | Pydantic + JSON Schema | Ensures AI and scripts speak the same language. |
+| **LLM Client** | OpenAI Python SDK | Pure HTTP call, without heavy agent frameworks (LangChain). |
+| **Persistence** | File System (JSON) | Simple, readable, and Git-versionable auditing. |
 
 ## 🛡️ Key Design Decisions (ADRs)
 The architecture is designed to contain LLM non-determinism. The most important decisions are documented in ADRs:

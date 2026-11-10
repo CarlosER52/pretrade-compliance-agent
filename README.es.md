@@ -11,8 +11,10 @@ En las mesas institucionales y brokers, un *Compliance Officer* revisa manualmen
 ## 💡 La Solución
 Un workflow determinista que pre-filtra las órdenes usando **reglas duras (scripts)**. Las órdenes que superan el filtro pasan por un **agente de IA** que analiza el contexto no estructurado y clasifica el riesgo. Finalmente, un **humano (gate obligatorio)** aprueba o rechaza. El sistema garantiza que ninguna orden se ejecute sin trazabilidad completa y que la IA nunca pueda anular una regla dura.
 
-## 🏗️ Arquitectura y Flujo
-El sistema se basa en una máquina de estados (Statechart) que garantiza que cada transición deje un artefacto auditable (JSON).
+## 🏗️ Arquitectura de Software
+El sistema está diseñado bajo un patrón de **Orquestación de Workflow Determinista (Deterministic Workflow Orchestration)**. Esta arquitectura implementa un motor de estados con **guardas condicionales**, **persistencia de artefactos en formato JSON** y **transiciones auditables**. 
+
+La arquitectura separa estrictamente el **motor de control** (que dicta el flujo) de la **lógica de negocio** (reglas y agentes), garantizando que la IA nunca asuma la autonomía del flujo de ejecución.
 
 ![Statechart](docs/statechart.png)
 
@@ -25,6 +27,28 @@ El sistema se basa en una máquina de estados (Statechart) que garantiza que cad
 6. `REVISION_HUMANA`: Gate obligatorio para riesgo >= MEDIUM.
 7. `APROBADA / RECHAZADA`: Decisión final del oficial.
 8. `ARCHIVADA`: Auditoría idempotente.
+
+**Componentes de la Arquitectura:**
+*   **Workflow Engine (Orquestador):** El motor que dicta las transiciones. Es puramente determinista y no usa IA.
+*   **Motor de Reglas (Scripts):** Validaciones duras e inmutables (R1 a R4).
+*   **Agente de Contexto (IA):** Función acotada que analiza datos no estructurados.
+*   **Guardas (Guardrails):** Controles de seguridad que validan las transiciones (ej. Piso de reglas duras).
+*   **Gate Humano:** Interfaz de decisión final con firma digital.
+
+### El Agente (LLM vía API)
+El agente de análisis de contexto **no es un agente autónomo**. Es una **función determinista con un LLM detrás**. 
+*   **Modelo:** Realiza una única llamada HTTP a la API de OpenAI (por defecto `gpt-4o-mini`).
+*   **Contrato:** El prompt fuerza al modelo a devolver un JSON estricto (`response_format={"type": "json_object"}`), validado contra nuestro schema.
+*   **Desacoplamiento:** El cliente del LLM está aislado. Si mañana migramos a Anthropic, a un modelo local (Llama 3) o a Azure OpenAI, el Statechart y las Guardas no necesitan cambiar una sola línea de código.
+
+### Stack Técnico
+| Capa | Tecnología | Por qué |
+| :--- | :--- | :--- |
+| **Orquestador** | Python 3.12 | Lenguaje estándar para sistemas agénticos y financieros. |
+| **Frontend (Gate)** | Streamlit | Prototipado rápido de la interfaz del Compliance Officer. |
+| **Validación de Datos** | Pydantic + JSON Schema | Garantiza que la IA y los scripts hablen el mismo idioma. |
+| **LLM Client** | OpenAI Python SDK | Llamada HTTP pura, sin frameworks de agentes pesados (LangChain). |
+| **Persistencia** | File System (JSON) | Auditoría simple, legible y versionable con Git. |
 
 ## 🛡️ Decisiones de Diseño Clave (ADRs)
 La arquitectura está diseñada para contener el no determinismo de los LLMs. Las decisiones más importantes están documentadas en los ADRs:
@@ -39,11 +63,6 @@ La arquitectura está diseñada para contener el no determinismo de los LLMs. La
 
 ---
 
-### 2. Actualizar `README.es.md` (Español)
-
-Busca la sección `## 📊 Evaluaciones (Evals)` y reemplázala por esto:
-
-```markdown
 ## 📊 Evaluaciones (Evals)
 
 Para garantizar la calidad del sistema, contamos con un *Golden Dataset* de 10 casos sintéticos que cubren casos límite (watchlists, instrumentos restringidos, múltiples fallos de reglas). El script de evaluación (`evals/run_evals.py`) mide el rendimiento del sistema:
@@ -68,5 +87,5 @@ cp .env.example .env
 # 3. Correr la demo en Streamlit
 streamlit run demo/streamlit_app.py
 
-*Corre las evals tú mismo:*
+# 4. Correr evaluaciones
 python evals/run_evals.py
